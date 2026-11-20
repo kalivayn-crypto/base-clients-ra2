@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Base de clients RA2</title>
+<meta name="theme-color" content="#F4F7FC">
 <meta name="description" content="La base de dades de l'Activitat 2, ordenada: 30 persones amb filtres, cerca i clients potencials per a dues empreses.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%232456F5'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,6 +13,9 @@
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+<a class="skip" href="#contingut">Salta al contingut</a>
+<noscript><p class="noscript">Aquesta pàgina necessita JavaScript per mostrar la base de dades, els filtres i la taula. Activa'l al navegador i torna a carregar-la.</p></noscript>
 
 <header class="top">
   <div class="wrap top-in">
@@ -24,7 +28,7 @@
   </div>
 </header>
 
-<main>
+<main id="contingut" tabindex="-1">
 
 <section class="hero" id="inici">
   <div class="wrap">
@@ -38,11 +42,11 @@
     <div class="demo" id="demo">
       <div class="demo-head">
         <span class="demo-tag">Com venia a l'Excel</span>
-        <button type="button" class="link-btn" id="demoToggle" aria-pressed="false">Atura l'animació</button>
+        <button type="button" class="link-btn" id="demoToggle">Atura les animacions</button>
       </div>
       <div class="cell">
         <span class="cell-ref" id="demoRef">A4</span>
-        <code class="cell-raw" id="demoRaw"></code>
+        <code class="cell-raw" id="demoRaw" lang="es"></code>
       </div>
       <div class="demo-head demo-head-2">
         <span class="demo-tag">Com queda ara</span>
@@ -63,7 +67,7 @@
   </div>
 </section>
 
-<div class="ticker" aria-hidden="true"><div class="ticker-run" id="ticker"></div></div>
+<div class="ticker" aria-hidden="true" lang="es"><div class="ticker-run" id="ticker"></div></div>
 
 <section class="sec" id="base">
   <div class="wrap">
@@ -101,7 +105,8 @@
     </div>
 
     <div class="result-bar">
-      <p class="result-count" aria-live="polite"><b id="count" data-v="30">30</b> de 30 persones</p>
+      <p class="result-count"><b id="count" data-v="30">30</b> de 30 persones</p>
+      <p class="sr-only" id="status" role="status"></p>
       <div class="result-actions">
         <button type="button" class="btn ghost" id="clear" hidden>Treu els filtres</button>
         <button type="button" class="btn" id="csv">Baixa el CSV</button>
@@ -129,6 +134,7 @@
       <div class="b-main">
         <p class="b-desc" id="bDesc"></p>
         <p class="b-count"><span class="b-num" id="bNum" data-v="0">0</span><span class="b-num-txt" id="bNumTxt"></span></p>
+        <p class="sr-only" id="bStatus" role="status"></p>
         <div class="ctl">
           <span class="ctl-label" id="lblCut">Compta com a client potencial</span>
           <div class="seg" id="cut" role="group" aria-labelledby="lblCut"></div>

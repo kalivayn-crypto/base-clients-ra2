@@ -1,7 +1,7 @@
 (() => {
 'use strict';
 
-const { HEADER, RAW, PEOPLE, TAGS, THEMES, SECTORS, ENTORNS, AVISOS } = window.DB;
+const { RAW, PEOPLE, TAGS, THEMES, SECTORS, ENTORNS, AVISOS } = window.DB;
 
 /* ---------- utilitats ---------- */
 const $ = (s, r = document) => r.querySelector(s);
@@ -139,6 +139,7 @@ const PAL = {
 const colorOf = (p, dim) => PAL[dim][DIMS[dim].get(p)];
 
 /* ---------- estat ---------- */
+let booted = false;
 const S = { q: '', terms: [], f: {}, sort: { k: 'id', dir: 1 }, group: 'cap', color: 'fills', company: 'repas', cut: 'mitjana', touched: false };
 Object.keys(DIMS).forEach(k => { S.f[k] = new Set(); });
 
@@ -276,8 +277,9 @@ const demo = (() => {
     }
   }
   function sync() {
-    toggle.textContent = playing ? "Atura l'animació" : "Reprèn l'animació";
-    toggle.setAttribute('aria-pressed', String(!playing));
+    /* el mateix botó atura tot el que es mou sol: la demostració, la cinta i els adhesius */
+    toggle.textContent = playing ? 'Atura les animacions' : 'Reprèn les animacions';
+    document.documentElement.classList.toggle('paused', !playing);
     if (playing && visible) play(); else { token++; paint(PEOPLE[i], true); $$('.seg-raw', rawEl).forEach(s => s.classList.add('hot', 'done')); }
   }
   toggle.addEventListener('click', () => { playing = !playing; sync(); });
@@ -300,10 +302,14 @@ function createField(stage, init) {
   const st = Object.assign({ group: 'cap', color: 'fills', on: null }, init);
   const labels = el('div', 'field-labels');
   stage.append(labels);
-  const dots = PEOPLE.map(p => {
+  stage.setAttribute('role', 'group');
+  stage.setAttribute('aria-label', "Adhesius de les 30 persones. Amb les fletxes del teclat et mous d'un adhesiu a l'altre i amb Retorn n'obres la fitxa.");
+  let lastPos = [];
+  const dots = PEOPLE.map((p, i) => {
     const b = el('button', 'gomet', `<span>${esc(p.inicials)}</span>`);
     b.type = 'button';
-    b.setAttribute('aria-label', `${p.nomComplet}, ${p.edat} anys, ${p.prof}. Obre la fitxa`);
+    /* un sol adhesiu entra a l'ordre del tabulador; la resta s'hi arriba amb les fletxes */
+    b.tabIndex = i === 0 ? 0 : -1;
     b.addEventListener('click', () => openFitxa(p));
     const show = () => {
       const r = b.getBoundingClientRect();
@@ -315,9 +321,33 @@ function createField(stage, init) {
     };
     const hide = () => { tip.hidden = true; };
     b.addEventListener('pointerenter', show); b.addEventListener('pointerleave', hide);
-    b.addEventListener('focus', show); b.addEventListener('blur', hide);
+    b.addEventListener('focus', () => { dots.forEach(x => { x.tabIndex = x === b ? 0 : -1; }); show(); });
+    b.addEventListener('blur', hide);
     stage.append(b);
     return b;
+  });
+
+  /* fletxes: salta a l'adhesiu més proper en aquella direcció */
+  stage.addEventListener('keydown', e => {
+    const i = dots.indexOf(document.activeElement);
+    if (i < 0) return;
+    let to = null;
+    if (e.key === 'Home') to = dots[0];
+    else if (e.key === 'End') to = dots[dots.length - 1];
+    else if (e.key.startsWith('Arrow') && lastPos[i]) {
+      const horiz = e.key === 'ArrowLeft' || e.key === 'ArrowRight', sign = e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 1;
+      let best = Infinity;
+      dots.forEach((b, j) => {
+        if (j === i) return;
+        const dx = lastPos[j][0] - lastPos[i][0], dy = lastPos[j][1] - lastPos[i][1];
+        const along = (horiz ? dx : dy) * sign, across = Math.abs(horiz ? dy : dx);
+        if (along < 1) return;
+        const cost = along + across * 2;
+        if (cost < best) { best = cost; to = b; }
+      });
+    } else return;
+    e.preventDefault();
+    if (to) to.focus();
   });
 
   function layout() {
@@ -375,8 +405,11 @@ function createField(stage, init) {
 
     stage.style.height = Math.ceil(H) + 'px';
     stage.style.setProperty('--d', d + 'px');
+    lastPos = pos;
+    const cdim = DIMS[st.color], cnames = Object.fromEntries(cdim.opts);
     PEOPLE.forEach((p, i) => {
       const b = dots[i];
+      b.setAttribute('aria-label', `${p.nomComplet}, ${p.edat} anys, ${p.prof}. ${cdim.label}: ${cnames[cdim.get(p)]}.${isOn(p) ? '' : ' Fora de la selecció.'} Obre la fitxa`);
       b.style.setProperty('--x', pos[i][0].toFixed(1) + 'px');
       b.style.setProperty('--y', pos[i][1].toFixed(1) + 'px');
       b.style.setProperty('--delay', (i * 14) + 'ms');
@@ -469,8 +502,10 @@ Object.entries(DIMS).forEach(([k, dim]) => {
 });
 document.addEventListener('click', e => { $$('.facet[open]').forEach(d => { if (!d.contains(e.target)) d.open = false; }); });
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') $$('.facet[open]').forEach(d => { d.open = false; });
-  if (e.key === '/' && !/input|textarea/i.test(document.activeElement.tagName)) { e.preventDefault(); $('#q').focus(); }
+  if (e.key !== 'Escape') return;
+  tip.hidden = true;
+  /* en tancar un filtre amb Esc, el focus torna al seu botó en lloc de perdre's */
+  $$('.facet[open]').forEach(d => { const inside = d.contains(document.activeElement); d.open = false; if (inside) $('summary', d).focus(); });
 });
 
 function toggleFilter(k, v) { const s = S.f[k]; if (s.has(v)) s.delete(v); else s.add(v); refresh(); }
@@ -557,9 +592,14 @@ function renderTable(visible) {
   $('#tbl').classList.toggle('is-empty', visible.length === 0);
 }
 
+/* Avís per a lectors de pantalla: un sol missatge quan el resultat s'ha estabilitzat. */
+let statusT = 0;
+function say(node, text) { clearTimeout(statusT); statusT = setTimeout(() => { node.textContent = text; }, 500); }
+
 function refresh() {
   const visible = PEOPLE.filter(p => matches(p));
   tween($('#count'), visible.length);
+  if (booted) say($('#status'), visible.length ? `${visible.length} de ${PEOPLE.length} persones a la taula.` : 'Cap persona compleix aquests filtres.');
   $('#clear').hidden = !anyFilter();
   renderFacets();
   renderThemes();
@@ -632,7 +672,7 @@ function openFitxa(p) {
     ${av('repas')}${av('farma')}
     <h3>Registre original</h3>
     <p class="hint">Fila ${p.fila} de l'Excel, columna A.</p>
-    <code class="raw-block">${esc(RAW[p.id - 1])}</code>`;
+    <code class="raw-block" lang="es">${esc(RAW[p.id - 1])}</code>`;
   dlg.showModal();
   dlg.scrollTop = 0;
   $('#fitxaClose').addEventListener('click', () => dlg.close());
@@ -661,6 +701,7 @@ function renderB() {
   $('#bDesc').textContent = c.desc;
   tween($('#bNum'), list.length);
   $('#bNumTxt').textContent = ` de ${PEOPLE.length} persones serien clients potencials`;
+  if (booted) $('#bStatus').textContent = `${c.nom}: ${list.length} de ${PEOPLE.length} persones serien clients potencials.`;
   $('#rules').innerHTML = c.rules.map(([pts, txt]) => `<li><b class="pts${pts === 'Requisit' ? ' req' : pts[0] === '−' ? ' neg' : ''}">${pts}</b><span>${esc(txt)}</span></li>`).join('');
   $('#rulesNote').textContent = c.note;
   field2.set({ group: k, color: k, on: new Set(list.map(p => p.id)) });
@@ -773,6 +814,7 @@ renderLegend();
 paintRowDots();
 refresh();
 renderB();
+booted = true;
 demo.start();
 document.documentElement.classList.add('js');
 })();
