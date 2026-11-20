@@ -689,19 +689,20 @@ $('#bToTable').addEventListener('click', () => {
 
 /* ---------- apartat c: què hi falta ---------- */
 (() => {
-  const heads = HEADER.split('|').slice(1, -1).map(s => s.trim());
-  const cells = RAW[0].split('|').slice(1, -1).map(s => s.trim());
+  // Traducció al català de la capçalera i de la primera fila de l'Excel (l'original és a la fitxa de cada persona).
+  const heads = ['Nom i cognoms', 'Edat', 'Dades demogràfiques', 'Entorn personal', 'Entorn professional', 'Rol personal i professional', 'Reptes i necessitats personals i professionals', 'Inquietuds i obstacles personals i professionals'];
+  const cells = ['Alberto Pérez', '27', 'Home, solter', 'Centre urbà', 'Programador de programari', 'Solter, programador', 'Innovació tecnològica, pressió pels projectes, estabilitat emocional'];
   $('#cdHead').innerHTML = heads.map((h, i) => `<span class="cd-chip${i >= 6 ? ' cd-warn' : ''}">${esc(h)}</span>`).join('');
   $('#cdRow').innerHTML = cells.map((c, i) => `<span class="cd-chip${i === 6 ? ' cd-warn' : ''}">${esc(c)}</span>`).join('') + '<span class="cd-chip cd-miss">no hi és</span>';
 
   const ISSUES = [
     ['Tot en una sola columna', "Cada persona era un text dins la columna A, amb les dades separades per barres. L'Excel no hi podia filtrar ni ordenar res.", 'Ara cada dada té el seu camp.'],
-    ['La capçalera anuncia 8 camps i les files en porten 7', '«Retos y necesidades» i «Inquietudes y obstáculos» arriben barrejats en una sola llista de tres elements, sense dir quin és quin.', "S'han unit en un camp, «Preocupacions», i cada element porta un tema."],
+    ['La capçalera anuncia 8 camps i les files en porten 7', '«Reptes i necessitats» i «Inquietuds i obstacles» arriben barrejats en una sola llista de tres elements, sense dir quin és quin.', "S'han unit en un camp, «Preocupacions», i cada element porta un tema."],
     ['Tres taules enganxades', 'La capçalera es repeteix a les files 2, 16 i 30, amb files buides entremig.', 'Una sola taula de 30 registres, cadascun amb un codi propi.'],
-    ['Camps que barregen dues dades', '«Hombre, Soltero» ajunta gènere i estat civil. «Padre, Contador» ajunta si té fills i la professió.', 'Separats en gènere, estat civil, fills i professió.'],
+    ['Camps que barregen dues dades', '«Home, solter» ajunta gènere i estat civil. «Pare, comptable» ajunta si té fills i la professió.', 'Separats en gènere, estat civil, fills i professió.'],
     ['Dades repetides', "L'estat civil i la professió surten dues vegades a cada fila, en columnes diferents.", 'Es guarden una sola vegada.'],
-    ['Categories sense criteri', '«Ciudad», «Centro urbano» i «Zona urbana» volen dir gairebé el mateix. «Suburbio» i «Zona residencial» se solapen.', "Camp nou «Tipus d'entorn» amb tres valors: urbà, residencial i rural."],
-    ['Una contradicció', 'Juan Pérez (fila 10) consta com a «Soltero» i, dues columnes després, com a «Padre».', "S'ha conservat com a solter amb fills i la fitxa porta un avís."],
+    ['Categories sense criteri', '«Ciutat», «Centre urbà» i «Zona urbana» volen dir gairebé el mateix. «Suburbi» i «Zona residencial» se solapen.', "Camp nou «Tipus d'entorn» amb tres valors: urbà, residencial i rural."],
+    ['Una contradicció', 'Juan Pérez (fila 10) consta com a «solter» i, dues columnes després, com a «pare».', "S'ha conservat com a solter amb fills i la fitxa porta un avís."],
     ['Un possible duplicat', 'Laura Martínez (fila 20) i Carolina Martínez (fila 38) coincideixen en edat, entorn, professió i preocupacions.', "No s'ha esborrat cap de les dues. Les dues fitxes porten un avís."]
   ];
   $('#issues').innerHTML = ISSUES.map(([t, a, b]) => `<li class="issue"><h4>${esc(t)}</h4><p class="issue-bad">${esc(a)}</p><p class="issue-fix">${esc(b)}</p></li>`).join('');
@@ -735,15 +736,15 @@ $('#bToTable').addEventListener('click', () => {
   const SCHEMA = [
     ['codi', 'Text', 'Nou', 'Identificador únic, de C-001 a C-030.'],
     ['fila_excel', 'Nombre', 'Original', "Fila on era el registre al full de càlcul."],
-    ['nom, cognom', 'Text', 'Separat', 'Abans anaven junts a «Nombre y Apellidos».'],
+    ['nom, cognom', 'Text', 'Separat', 'Abans anaven junts a «Nom i cognoms».'],
     ['edat', 'Nombre', 'Original', 'De 25 a 45 anys.'],
     ['franja_edat', 'Categoria', 'Nou', 'Quatre franges per poder comparar grups.'],
-    ['genere', 'Categoria', 'Separat', 'Sortia dins de «Datos demográficos».'],
-    ['estat_civil', 'Categoria', 'Separat', 'Sortia dins de «Datos demográficos» i repetit al rol.'],
-    ['te_fills', 'Sí o no consta', 'Deduït', 'Del rol «Padre» o «Madre».'],
+    ['genere', 'Categoria', 'Separat', 'Sortia dins de «Dades demogràfiques».'],
+    ['estat_civil', 'Categoria', 'Separat', 'Sortia dins de «Dades demogràfiques» i repetit al rol.'],
+    ['te_fills', 'Sí o no consta', 'Deduït', 'Del rol «pare» o «mare».'],
     ['entorn', 'Categoria', 'Original', 'Els sis noms que feia servir la base.'],
     ['tipus_entorn', 'Categoria', 'Nou', 'Urbà, residencial o rural.'],
-    ['professio', 'Text', 'Original', 'De la columna «Entorno profesional».'],
+    ['professio', 'Text', 'Original', 'De la columna «Entorn professional».'],
     ['sector', 'Categoria', 'Nou', 'Deu sectors per agrupar les professions.'],
     ['feina_propia', 'Sí o no', 'Deduït', 'Si la professió diu que té negoci propi.'],
     ['preocupacions', 'Llista de 3', 'Original', 'Reptes, necessitats i inquietuds, que venien barrejats.'],
