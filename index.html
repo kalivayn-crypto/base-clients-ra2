@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Base de clients RA2</title>
+<meta name="description" content="La base de dades de l'Activitat 2, ordenada: 30 persones amb filtres, cerca i clients potencials per a dues empreses.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%232456F5'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="#inici"><span class="brand-dot" aria-hidden="true"></span>Base de clients RA2</a>
+    <nav class="nav" aria-label="Apartats de l'activitat">
+      <a href="#base" data-nav="base">a) Ordenar<span class="nav-x"> i analitzar</span></a>
+      <a href="#potencials" data-nav="potencials">b) Clients<span class="nav-x"> potencials</span></a>
+      <a href="#falta" data-nav="falta">c) Què <span class="nav-x">hi </span>falta</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<section class="hero" id="inici">
+  <div class="wrap">
+    <h1 class="display">
+      <span style="--i:0">Trenta persones</span>
+      <span style="--i:1">atrapades en</span>
+      <span style="--i:2">una sola columna.</span>
+    </h1>
+    <p class="lead">La base de dades de l'Activitat 2 venia així: cada persona escrita dins d'una única cel·la, amb les dades separades per barres. No es podia filtrar ni ordenar res. Aquí cada dada té el seu camp, hi ha categories noves i es pot buscar.</p>
+
+    <div class="demo" id="demo">
+      <div class="demo-head">
+        <span class="demo-tag">Com venia a l'Excel</span>
+        <button type="button" class="link-btn" id="demoToggle" aria-pressed="false">Atura l'animació</button>
+      </div>
+      <div class="cell">
+        <span class="cell-ref" id="demoRef">A4</span>
+        <code class="cell-raw" id="demoRaw"></code>
+      </div>
+      <div class="demo-head demo-head-2">
+        <span class="demo-tag">Com queda ara</span>
+      </div>
+      <dl class="clean" id="demoClean">
+        <div class="f f-new" data-f="codi"><dt>Codi</dt><dd></dd></div>
+        <div class="f f-wide" data-f="nom"><dt>Nom</dt><dd></dd></div>
+        <div class="f" data-f="edat"><dt>Edat</dt><dd></dd></div>
+        <div class="f" data-f="genere"><dt>Gènere</dt><dd></dd></div>
+        <div class="f" data-f="ec"><dt>Estat civil</dt><dd></dd></div>
+        <div class="f" data-f="fills"><dt>Fills</dt><dd></dd></div>
+        <div class="f f-wide" data-f="entorn"><dt>Entorn</dt><dd></dd></div>
+        <div class="f f-wide" data-f="prof"><dt>Professió</dt><dd></dd></div>
+        <div class="f f-new" data-f="sector"><dt>Sector</dt><dd></dd></div>
+        <div class="f f-full" data-f="tags"><dt>Preocupacions</dt><dd></dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<div class="ticker" aria-hidden="true"><div class="ticker-run" id="ticker"></div></div>
+
+<section class="sec" id="base">
+  <div class="wrap">
+    <h2 class="h2">a) Ordenar i analitzar</h2>
+    <p class="sec-lead">Cada adhesiu és una persona de la base. Canvia com s'agrupen i de quin color es pinten per veure què tenen en comú. Clica'n un per obrir la seva fitxa.</p>
+
+    <div class="controls">
+      <div class="ctl">
+        <span class="ctl-label" id="lblGroup">Agrupa per</span>
+        <div class="seg" id="groupBy" role="group" aria-labelledby="lblGroup"></div>
+      </div>
+      <div class="ctl">
+        <span class="ctl-label" id="lblColor">Pinta per</span>
+        <div class="seg" id="colorBy" role="group" aria-labelledby="lblColor"></div>
+      </div>
+    </div>
+
+    <div class="board">
+      <div class="legend" id="legend"></div>
+      <div class="field" id="field"></div>
+    </div>
+
+    <div class="themes">
+      <h3 class="h3">Què els preocupa</h3>
+      <p class="hint">Persones que esmenten cada tema. Clica una barra per filtrar.</p>
+      <div class="bars" id="themeBars"></div>
+    </div>
+
+    <div class="finder" id="finder">
+      <div class="search">
+        <label for="q">Busca</label>
+        <input id="q" type="search" placeholder="Nom, professió, preocupació, ciutat…" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="facets" id="facets"></div>
+    </div>
+
+    <div class="result-bar">
+      <p class="result-count" aria-live="polite"><b id="count" data-v="30">30</b> de 30 persones</p>
+      <div class="result-actions">
+        <button type="button" class="btn ghost" id="clear" hidden>Treu els filtres</button>
+        <button type="button" class="btn" id="csv">Baixa el CSV</button>
+      </div>
+    </div>
+
+    <div class="table-wrap wide">
+      <table class="tbl" id="tbl">
+        <thead><tr id="thead"></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <p class="empty" id="empty" hidden>Cap persona compleix tots aquests filtres. Treu-ne algun o esborra la cerca.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec sec-b" id="potencials">
+  <div class="wrap">
+    <h2 class="h2">b) Clients potencials</h2>
+    <p class="sec-lead">Les dues empreses de l'Activitat 1 busquen clients diferents. Tria'n una per veure qui encaixa i per què.</p>
+
+    <div class="companies" id="companies" role="group" aria-label="Empresa"></div>
+
+    <div class="b-grid">
+      <div class="b-main">
+        <p class="b-desc" id="bDesc"></p>
+        <p class="b-count"><span class="b-num" id="bNum" data-v="0">0</span><span class="b-num-txt" id="bNumTxt"></span></p>
+        <div class="ctl">
+          <span class="ctl-label" id="lblCut">Compta com a client potencial</span>
+          <div class="seg" id="cut" role="group" aria-labelledby="lblCut"></div>
+        </div>
+        <div class="board">
+          <div class="field" id="field2"></div>
+        </div>
+      </div>
+      <aside class="b-rules">
+        <h3 class="h3">Com es puntua</h3>
+        <ul class="rules" id="rules"></ul>
+        <p class="hint" id="rulesNote"></p>
+      </aside>
+    </div>
+
+    <div class="b-list-head">
+      <h3 class="h3" id="bListTitle">Qui són</h3>
+      <button type="button" class="btn" id="bToTable">Mostra'ls a la taula</button>
+    </div>
+    <ol class="b-list" id="bList"></ol>
+  </div>
+</section>
+
+<section class="sec" id="falta">
+  <div class="wrap">
+    <h2 class="h2">c) Què hi falta</h2>
+    <p class="sec-lead">Abans de decidir res amb aquesta base cal saber què porta malament i què no porta.</p>
+
+    <div class="count-demo" id="countDemo">
+      <div class="cd-row">
+        <p class="cd-title"><b>8</b> camps a la capçalera</p>
+        <div class="cd-chips" id="cdHead"></div>
+      </div>
+      <div class="cd-row">
+        <p class="cd-title"><b>7</b> dades a cada fila</p>
+        <div class="cd-chips" id="cdRow"></div>
+      </div>
+    </div>
+
+    <h3 class="h3">Errors de l'original i com s'han resolt</h3>
+    <ul class="issues" id="issues"></ul>
+
+    <h3 class="h3">Informació que caldria demanar</h3>
+    <div class="missing" id="missing"></div>
+
+    <h3 class="h3">Com és la base nova</h3>
+    <p class="hint">Cada camp, quin tipus de dada guarda i d'on surt.</p>
+    <div class="table-wrap">
+      <table class="tbl schema" id="schema"></table>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p>Feta per a l'Activitat 2 del RA2. Les dades surten del full de càlcul «Activitat de Configuració de SIM 1».</p>
+  </div>
+</footer>
+
+<dialog class="fitxa" id="fitxa" aria-labelledby="fitxaNom">
+  <div class="fitxa-in" id="fitxaIn"></div>
+</dialog>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
