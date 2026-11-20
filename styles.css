@@ -331,11 +331,17 @@ mark { color: inherit; background: linear-gradient(var(--fluor), var(--fluor)) n
 .who-empty { display: block; font-weight: 600; }
 
 /* ---------- apartat c ---------- */
-.count-demo { display: grid; gap: 22px; margin-top: 36px; padding: 20px clamp(12px, 2vw, 24px) 24px; background: var(--sheet); border: 2px solid var(--ink); }
-.cd-title { font-weight: 700; }
-.cd-title b { font-weight: 900; font-stretch: 62%; font-size: 3.2rem; line-height: .8; margin-right: 6px; }
-.cd-chips { display: flex; flex-wrap: wrap; gap: 8px 6px; margin-top: 10px; }
-.cd-chip { position: relative; padding: 4px 9px; border: 1.5px solid var(--ink); font-family: var(--mono); font-size: .78rem; line-height: 1.35; max-width: 100%; overflow-wrap: anywhere; }
+.count-demo { margin-top: 16px; padding: 20px clamp(12px, 2vw, 24px) 24px; background: var(--sheet); border: 2px solid var(--ink); }
+.cd-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.cd-table th, .cd-table td { padding: 9px 14px 9px 0; text-align: left; vertical-align: top; border-top: 1px solid var(--grid); }
+.cd-table thead th { padding-bottom: 14px; border-top: 0; vertical-align: bottom; font-weight: 700; line-height: 1.2; }
+.cd-table thead b { font-weight: 900; font-stretch: 62%; font-size: 3.2rem; line-height: .8; margin-right: 6px; }
+.cd-table .cd-n { width: 2.4em; font-weight: 900; font-stretch: 70%; font-size: 1.25rem; line-height: 1.3; font-variant-numeric: tabular-nums; }
+.cd-table tbody tr:first-child > * { border-top: 2px solid var(--ink); }
+.cd-bad .cd-n { color: var(--red); }
+.cd-chip.cd-red { border-color: var(--red); color: var(--red); }
+.cd-why { display: block; max-width: 44ch; margin-top: 10px; font-size: .88rem; font-weight: 600; line-height: 1.35; color: var(--red); }
+.cd-chip { display: inline-block; position: relative; padding: 4px 9px; border: 1.5px solid var(--ink); font-family: var(--mono); font-size: .78rem; line-height: 1.35; max-width: 100%; overflow-wrap: anywhere; }
 .cd-warn { border-color: var(--red); color: var(--red); }
 .cd-warn::after, .cd-miss::after {
   content: ""; position: absolute; inset: -7px -9px; border: 2.5px solid var(--red); border-radius: 50% 46% 52% 48% / 58% 50% 54% 46%;

@@ -280,7 +280,7 @@ const demo = (() => {
     /* el mateix botó atura tot el que es mou sol: la demostració, la cinta i els adhesius */
     toggle.textContent = playing ? 'Atura les animacions' : 'Reprèn les animacions';
     document.documentElement.classList.toggle('paused', !playing);
-    if (playing && visible) play(); else { token++; paint(PEOPLE[i], true); $$('.seg-raw', rawEl).forEach(s => s.classList.add('hot', 'done')); }
+    if (playing && visible) play(); else { token++; $$('.ghost').forEach(g => g.remove()); paint(PEOPLE[i], true); $$('.seg-raw', rawEl).forEach(s => s.classList.add('hot', 'done')); }
   }
   toggle.addEventListener('click', () => { playing = !playing; sync(); });
   if (reduced) toggle.hidden = true;
@@ -733,18 +733,21 @@ $('#bToTable').addEventListener('click', () => {
   // Traducció al català de la capçalera i de la primera fila de l'Excel (l'original és a la fitxa de cada persona).
   const heads = ['Nom i cognoms', 'Edat', 'Dades demogràfiques', 'Entorn personal', 'Entorn professional', 'Rol personal i professional', 'Reptes i necessitats personals i professionals', 'Inquietuds i obstacles personals i professionals'];
   const cells = ['Alberto Pérez', '27', 'Home, solter', 'Centre urbà', 'Programador de programari', 'Solter, programador', 'Innovació tecnològica, pressió pels projectes, estabilitat emocional'];
-  $('#cdHead').innerHTML = heads.map((h, i) => `<span class="cd-chip${i >= 6 ? ' cd-warn' : ''}">${esc(h)}</span>`).join('');
-  $('#cdRow').innerHTML = cells.map((c, i) => `<span class="cd-chip${i === 6 ? ' cd-warn' : ''}">${esc(c)}</span>`).join('') + '<span class="cd-chip cd-miss">no hi és</span>';
+  /* un títol per fila amb la seva dada al costat: al 7 n'hi ha dues de barrejades i al 8 no n'hi ha cap */
+  $('#cdBody').innerHTML = heads.map((h, i) => {
+    const cell = i < 6 ? `<span class="cd-chip">${esc(cells[i])}</span>`
+      : i === 6 ? `<span class="cd-chip cd-warn">${esc(cells[i])}</span><small class="cd-why">Una sola llista de tres coses. No diu quines són reptes (títol 7) i quines són inquietuds (títol 8).</small>`
+      : `<span class="cd-chip cd-miss">buit</span><small class="cd-why">No hi ha vuitena dada: la fila s'acaba a la setena.</small>`;
+    return `<tr${i >= 6 ? ' class="cd-bad"' : ''}><th scope="row" class="cd-n">${i + 1}</th><td><span class="cd-chip${i >= 6 ? ' cd-red' : ''}">${esc(h)}</span></td><td>${cell}</td></tr>`;
+  }).join('');
 
   const ISSUES = [
     ['Tot en una sola columna', "Cada persona era un text dins la columna A, amb les dades separades per barres. L'Excel no hi podia filtrar ni ordenar res.", 'Ara cada dada té el seu camp.'],
     ['La capçalera anuncia 8 camps i les files en porten 7', '«Reptes i necessitats» i «Inquietuds i obstacles» arriben barrejats en una sola llista de tres elements, sense dir quin és quin.', "S'han unit en un camp, «Preocupacions», i cada element porta un tema."],
     ['Tres taules enganxades', 'La capçalera es repeteix a les files 2, 16 i 30, amb files buides entremig.', 'Una sola taula de 30 registres, cadascun amb un codi propi.'],
     ['Camps que barregen dues dades', '«Home, solter» ajunta gènere i estat civil. «Pare, comptable» ajunta si té fills i la professió.', 'Separats en gènere, estat civil, fills i professió.'],
-    ['Dades repetides', "L'estat civil i la professió surten dues vegades a cada fila, en columnes diferents.", 'Es guarden una sola vegada.'],
+    ['Dades repetides', "La professió surt dues vegades a cada fila, en columnes diferents. L'estat civil també, quan la persona no té fills.", 'Es guarden una sola vegada.'],
     ['Categories sense criteri', '«Ciutat», «Centre urbà» i «Zona urbana» volen dir gairebé el mateix. «Suburbi» i «Zona residencial» se solapen.', "Camp nou «Tipus d'entorn» amb tres valors: urbà, residencial i rural."],
-    ['Una contradicció', 'Juan Pérez (fila 10) consta com a «solter» i, dues columnes després, com a «pare».', "S'ha conservat com a solter amb fills i la fitxa porta un avís."],
-    ['Un possible duplicat', 'Laura Martínez (fila 20) i Carolina Martínez (fila 38) coincideixen en edat, entorn, professió i preocupacions.', "No s'ha esborrat cap de les dues. Les dues fitxes porten un avís."]
   ];
   $('#issues').innerHTML = ISSUES.map(([t, a, b]) => `<li class="issue"><h4>${esc(t)}</h4><p class="issue-bad">${esc(a)}</p><p class="issue-fix">${esc(b)}</p></li>`).join('');
 

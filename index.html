@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=4">
+<link rel="stylesheet" href="styles.css?v=5">
 </head>
 <body>
 
@@ -163,17 +163,22 @@
     <h2 class="h2">c) Què hi falta</h2>
     <p class="sec-lead">Abans de decidir res amb aquesta base cal saber què porta malament i què no porta.</p>
 
-    <p class="hint">L'Excel original està escrit en castellà. Aquí els seus textos s'han traduït al català; l'original es pot llegir a la fitxa de cada persona.</p>
+    <h3 class="h3">La capçalera promet 8 dades i cada fila en porta 7</h3>
+    <p class="hint">La primera línia de l'Excel té vuit títols, separats per barres. Cada persona, en canvi, només porta set dades. Aquí estan posats de costat, un títol amb la seva dada, per veure on falla.</p>
     <div class="count-demo" id="countDemo">
-      <div class="cd-row">
-        <p class="cd-title"><b>8</b> camps a la capçalera</p>
-        <div class="cd-chips" id="cdHead"></div>
-      </div>
-      <div class="cd-row">
-        <p class="cd-title"><b>7</b> dades a cada fila</p>
-        <div class="cd-chips" id="cdRow"></div>
-      </div>
+      <table class="cd-table">
+        <caption class="sr-only">Els vuit títols de la capçalera de l'Excel al costat de les set dades de la fila de l'Alberto Pérez</caption>
+        <thead>
+          <tr>
+            <th scope="col" class="cd-n"><span class="sr-only">Posició</span></th>
+            <th scope="col"><b>8</b> títols a la capçalera</th>
+            <th scope="col"><b>7</b> dades a la fila de l'Alberto Pérez</th>
+          </tr>
+        </thead>
+        <tbody id="cdBody"></tbody>
+      </table>
     </div>
+    <p class="hint">L'exemple és la fila 4 de l'Excel, però passa igual a les 30 persones. L'Excel original està escrit en castellà: aquí els textos s'han traduït al català i l'original es pot llegir a la fitxa de cada persona.</p>
 
     <h3 class="h3">Errors de l'original i com s'han resolt</h3>
     <ul class="issues" id="issues"></ul>
@@ -201,7 +206,7 @@
   <div class="fitxa-in" id="fitxaIn"></div>
 </dialog>
 
-<script src="data.js?v=4"></script>
-<script src="app.js?v=4"></script>
+<script src="data.js?v=5"></script>
+<script src="app.js?v=5"></script>
 </body>
 </html>

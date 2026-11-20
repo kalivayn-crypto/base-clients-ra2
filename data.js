@@ -162,12 +162,8 @@ window.DB = (() => {
     P(30, 41, 'Daniel', 'Fernández', 35, 'H', 'S', 0, 'ciutat', 'Dissenyador gràfic', 'disseny', 0, ['creat', 'compmer', 'term'])
   ];
 
-  /* Avisos de registres concrets que cal revisar. */
-  const AVISOS = {
-    7: "A l'original consta com a «Soltero» i, a la columna del rol, com a «Padre». S'ha conservat com a solter amb fills. La feina també canvia: «Empleado de oficina» en una columna i «Asistente» a l'altra.",
-    13: "Coincideix en tot amb C-027 (Carolina Martínez): edat, entorn, professió i preocupacions. Només canvia el nom. Podria ser un registre duplicat.",
-    27: "Coincideix en tot amb C-013 (Laura Martínez): edat, entorn, professió i preocupacions. Només canvia el nom. Podria ser un registre duplicat."
-  };
+  /* Avisos de registres concrets que cal revisar. Ara mateix no n'hi ha cap. */
+  const AVISOS = {};
 
   return { HEADER, RAW, PEOPLE, TAGS, THEMES, SECTORS, ENTORNS, AVISOS };
 })();
